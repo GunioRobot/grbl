@@ -42,18 +42,11 @@ int pos_line=0;
 // include the library code:
 #include <LiquidCrystal.h>
 
-#define LCD_DB0 	4				// Using Ardiuno numbering, not port numbering
-#define LCD_DB1		5				// Equivalent to PORTD, pins 7 to 2
-#define LCD_DB2		6
-#define LCD_DB3		7
-#define LCD_ENABLE	3
-#define LCD_RS 		2
-
 
 // initialize the library with the numbers of the interface pins
-LiquidCrystal lcd(LCD_RS, LCD_ENABLE, LCD_DB0, LCD_DB1, LCD_DB2, LCD_DB3);
+LiquidCrystal lcd(2,3,4,5,6,7);
 										
-
+/*
 extern "C" void lcd_print_char(char character);
 extern "C" void lcd_print_long(long num);
 extern "C" void lcd_print_str(char * line);
@@ -72,9 +65,12 @@ void lcd_print_str(char * line)
 {
 	lcd.print(line);
 }
-
+*/
 
 void setup_lcd() {
+  pinMode(13,OUTPUT);			//backlight!
+  digitalWrite(13, HIGH);
+
   // set up the LCD's number of columns and rows: 
   lcd.begin(16, 2);
   // Print a message to the LCD.
@@ -84,8 +80,6 @@ void setup_lcd() {
   lcd.setCursor(0,1);
   lcd.print("Y");
   
-  pinMode(13,OUTPUT);
-  digitalWrite(13, HIGH);
 }
 
 
@@ -139,25 +133,22 @@ void report_position(void)
 //*************************************************************************************
 int main(void)
 {
-	setup_lcd();
-//	loop();
+  setup_lcd();
 
-
-
-  beginSerial(BAUD_RATE);
-  config_init();
-  st_init(); // initialize the stepper subsystem
-  mc_init(); // initialize motion control subsystem
-  spindle_init(); // initialize spindle controller
-  gc_init(); // initialize gcode-parser
-  sp_init(); // initialize the serial protocol
+//  beginSerial(BAUD_RATE);
+//  config_init();
+//  st_init(); // initialize the stepper subsystem
+//  mc_init(); // initialize motion control subsystem
+//  spindle_init(); // initialize spindle controller
+//  gc_init(); // initialize gcode-parser
+//  sp_init(); // initialize the serial protocol
   
-  DDRD |= (1<<3)|(1<<4)|(1<<5);
+//  DDRD |= (1<<3)|(1<<4)|(1<<5);
   
   for(;;){
     report_position();
     //sleep_mode();
-    sp_process(); // process the serial protocol
+//    sp_process(); // process the serial protocol
   }
   return 0;   /* never reached */
 }

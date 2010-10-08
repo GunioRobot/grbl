@@ -135,7 +135,6 @@ void sp_process()
   {
   	// Echo sent characters if required:
 	serialWrite(c);			// I like to see the characters as they're sent (bob)
-	//lcd_print_char(c);
 	
 	if (c == '\r') {serialWrite('\n');}
 	
@@ -145,12 +144,12 @@ void sp_process()
       if (line[0]=='E'){
       	process_command(line);
       	char_counter=0;
+      	prompt();
       } else {     
       	status = gc_execute_line(line);
       	char_counter = 0; 
-      	return_status(status);
+      	return_status(status);	// Replaces prompt
       }
-      prompt();
     } else if (c <= ' ') { // Throw away whitepace and control characters
     } else if (c >= 'a' && c <= 'z') { // Upcase lowercase
       line[char_counter++] = c-'a'+'A';

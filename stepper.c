@@ -128,9 +128,9 @@ SIGNAL(SIG_OUTPUT_COMPARE1A)
   if(busy){ return; } // The busy-flag is used to avoid reentering this interrupt
   
   // Set the direction pins a cuple of nanoseconds before we step the steppers
-  STEPPING_PORT = (STEPPING_PORT & ~DIRECTION_MASK) | (out_bits & DIRECTION_MASK);
+//  STEPPING_PORT = (STEPPING_PORT & ~DIRECTION_MASK) | (out_bits & DIRECTION_MASK);
   // Then pulse the stepping pins
-  STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK) | out_bits;
+//  STEPPING_PORT = (STEPPING_PORT & ~STEP_MASK) | out_bits;
   // Reset step pulse reset timer so that SIG_OVERFLOW2 can reset the signal after
   // exactly settings.pulse_microseconds microseconds.
   TCNT2 = -(((settings.pulse_microseconds-2)*TICKS_PER_MICROSECOND)/8);
@@ -230,7 +230,7 @@ void st_init()
 	// Configure directions of interface pins
   STEPPING_DDR   |= STEPPING_MASK;
   STEPPING_PORT = (STEPPING_PORT & ~STEPPING_MASK) | settings.invert_mask;
-  LIMIT_DDR &= ~(LIMIT_MASK);
+//  LIMIT_DDR &= ~(LIMIT_MASK);
   STEPPERS_ENABLE_DDR |= 1<<STEPPERS_ENABLE_BIT;
   
 	// waveform generation = 0100 = CTC
