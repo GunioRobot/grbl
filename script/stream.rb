@@ -7,12 +7,12 @@ options_parser = OptionParser.new do |opts|
   opts.banner = "Usage: stream [options] gcode-file"
   opts.on('-v', '--verbose', 'Output more information') do
     $verbose = true
-  end   
+  end
 
   opts.on('-p', '--prebuffer', 'Prebuffer commands') do
     $prebuffer = true
-  end   
-  
+  end
+
   opts.on('-h', '--help', 'Display this screen') do
     puts opts
     exit

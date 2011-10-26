@@ -19,7 +19,7 @@
 */
 
 #ifndef stepper_h
-#define stepper_h 
+#define stepper_h
 
 #include <avr/io.h>
 #include <avr/sleep.h>
@@ -35,13 +35,13 @@ extern uint32_t iterations;            // The number of iterations left to compl
 // Initialize and start the stepper motor subsystem
 void st_init();
 
-// Add a new linear movement to the buffer. steps_x, _y and _z is the signed, 
+// Add a new linear movement to the buffer. steps_x, _y and _z is the signed,
 // relative motion in steps.
 // pos_x, _y, _z is the position in absolute steps at the start of the move
 // Microseconds specify how many microseconds the move should take to perform.
-int st_buffer_block(int32_t steps_x, int32_t steps_y, int32_t steps_z, 
+int st_buffer_block(int32_t steps_x, int32_t steps_y, int32_t steps_z,
 					 int32_t pos_x,   int32_t pos_y,   int32_t pos_z,
-					 uint32_t rate, 
+					 uint32_t rate,
 					 int16_t line_number);
 
 // Returns true if the stepper buffer is full. This can allow the controlling

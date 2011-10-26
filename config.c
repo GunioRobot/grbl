@@ -1,5 +1,5 @@
 /*
-  config.c - eeprom and compile time configuration handling 
+  config.c - eeprom and compile time configuration handling
   Part of Grbl
 
   Copyright (c) 2009 Simen Svale Skogsrud
@@ -48,18 +48,18 @@ void dump_settings() {
   printPgmString(PSTR(" (microseconds step pulse)\r\n$4 = ")); printFloat(settings.default_feed_rate);
   printPgmString(PSTR(" (mm/sec default feed rate)\r\n$5 = ")); printFloat(settings.default_seek_rate);
   printPgmString(PSTR(" (mm/sec G0 seek rate)\r\n$6 = ")); printFloat(settings.mm_per_arc_segment);
-  printPgmString(PSTR(" (mm/arc segment)\r\n$7 = ")); printInteger(settings.invert_mask); 
-  printPgmString(PSTR(" (step port invert mask. binary = ")); printIntegerInBase(settings.invert_mask, 2);  
-  printPgmString(PSTR(")\r\n$8 = "));printInteger(settings.backlash_x_count); 
-  printPgmString(PSTR("(counts to compensate for backlash in x)\r\n$9 = "));printInteger(settings.backlash_y_count); 
-  printPgmString(PSTR("(counts to compensate for backlash in x)\r\n$10 = "));printInteger(settings.backlash_z_count); 
+  printPgmString(PSTR(" (mm/arc segment)\r\n$7 = ")); printInteger(settings.invert_mask);
+  printPgmString(PSTR(" (step port invert mask. binary = ")); printIntegerInBase(settings.invert_mask, 2);
+  printPgmString(PSTR(")\r\n$8 = "));printInteger(settings.backlash_x_count);
+  printPgmString(PSTR("(counts to compensate for backlash in x)\r\n$9 = "));printInteger(settings.backlash_y_count);
+  printPgmString(PSTR("(counts to compensate for backlash in x)\r\n$10 = "));printInteger(settings.backlash_z_count);
   printPgmString(PSTR("(counts to compensate for backlash in z)\r\n"));
   printPgmString(PSTR("\r\n'$x=value' to set parameter or just '$' to dump current settings\r\n"));
 }
 
 int read_settings() {
   // Check version-byte of eeprom
-  uint8_t version = eeprom_get_char(0);  
+  uint8_t version = eeprom_get_char(0);
   if (version != SETTINGS_VERSION) { return(FALSE); }
   // Read settings-record and check checksum
   if (!(memcpy_from_eeprom_with_checksum((char*)&settings, 1, sizeof(struct Settings)))) {
@@ -86,7 +86,7 @@ void store_setting(int parameter, double value) {
     case 8: settings.backlash_x_count= trunc(value); break;
     case 9: settings.backlash_y_count= trunc(value); break;
     case 10: settings.backlash_z_count= trunc(value); break;
-    default: 
+    default:
     printPgmString(PSTR("Unknown parameter\r\n"));
     return;
   }

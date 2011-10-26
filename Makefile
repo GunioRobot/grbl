@@ -55,23 +55,23 @@ OBJECTS    = main.o motion_control.o gcode.o spindle_control.o \
 #             $(ARDUINO_LIB)/PS2X_lib/PS2X_lib.o \
 #             ps2_controller.o \
 #             PS2Y_lib.o \
-             
+
 # FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0x24:m
 FUSES      = -U hfuse:w:0xd2:m -U lfuse:w:0xff:m
 
 # Tune the lines below only if you know what you are doing:
 
-AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE) -B 10 -F 
+AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE) -B 10 -F
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -I$(ARDUINO) -I$(ARDUINO_LIB)
 
 # symbolic targets:
 all:	grbl.hex
 
 .c.o:
-	$(COMPILE) -c $< -o $@ 
+	$(COMPILE) -c $< -o $@
 
 .cpp.o:
-	$(COMPILE) -c $< -o $@ 
+	$(COMPILE) -c $< -o $@
 
 
 .S.o:
@@ -116,4 +116,4 @@ disasm:	main.elf
 	avr-objdump -d main.elf
 
 cpp:
-	$(COMPILE) -E main.c 
+	$(COMPILE) -E main.c

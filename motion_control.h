@@ -19,7 +19,7 @@
 */
 
 #ifndef motion_control_h
-#define motion_control_h 
+#define motion_control_h
 
 #include <avr/io.h>
 
@@ -37,8 +37,8 @@ void mc_reposition(double x, double y, double z, int32_t line_number);
 // positive angular_travel means clockwise, negative means counterclockwise. Radius == the radius of the
 // circle in millimeters. axis_1 and axis_2 selects the circle plane in tool space. Stick the remaining
 // axis in axis_l which will be the axis for linear travel if you are tracing a helical motion.
-void mc_arc(double theta, double angular_travel, double radius, double linear_travel, 
-            int axis_1, int axis_2, int axis_linear, 
+void mc_arc(double theta, double angular_travel, double radius, double linear_travel,
+            int axis_1, int axis_2, int axis_linear,
             double target_x, double target_y, double target_z,
             double feed_rate, int invert_feed_rate, int32_t line_number);
 

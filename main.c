@@ -51,15 +51,15 @@ int main(void)
   spindle_init(); // initialize spindle controller
   gc_init();      // initialize gcode-parser
   sp_init();      // initialize the serial protocol
-  
+
   DDRD |= (1<<3)|(1<<4)|(1<<5);
 
   for(;;){
     i2c_report_position();
     _delay_ms(1);			// Delay is required, otherwise
-    
+
     // if mc_running and current_mode = SM_RUN then don't get buttons, else do
-    
+
     if (!(mc_running==0 & (st_current_mode!=SM_RUN))){
 		i2c_get_buttons();      // i2c_get doesn't work. 1ms seems to be enough
 		if (buttons[0]|buttons[1]|buttons[2]|buttons[3]){
@@ -68,7 +68,7 @@ int main(void)
 			ENABLE_STEPPER_DRIVER_INTERRUPT();
 		}
 	}
-	    
+
     if (serialAvailable()) sp_process(); // process the serial protocol
     if (mc_in_arc()) mc_continue_arc(); // if busy drawing an arc, keep drawing
   }

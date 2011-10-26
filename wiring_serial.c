@@ -48,11 +48,11 @@ void beginSerial(long baud)
 {
 	UBRR0H = ((F_CPU / 16 + baud / 2) / baud - 1) >> 8;
 	UBRR0L = ((F_CPU / 16 + baud / 2) / baud - 1);
-	
+
 	// enable rx and tx
 	sbi(UCSR0B, RXEN0);
 	sbi(UCSR0B, TXEN0);
-	
+
 	// enable interrupt on complete reception of a byte
 	sbi(UCSR0B, RXCIE0);
 	cbi(UCSR0B, UDRIE0);
@@ -117,7 +117,7 @@ SIGNAL(USART_UDRE_vect)
     // There is more data in the output buffer. Send the next byte
     unsigned char c = tx_buffer[tx_tail];
     tx_tail = (tx_tail + 1) % TX_BUFFER_SIZE;
-	
+
     UDR0 = c;
   }
 }
@@ -126,15 +126,15 @@ void serialWrite(unsigned char c)
 {
   unsigned char empty = (tx_head == tx_tail);
   unsigned char i = (tx_head + 1) % TX_BUFFER_SIZE;
-	
-  // If the output buffer is full, there's nothing for it other than to 
+
+  // If the output buffer is full, there's nothing for it other than to
   // wait for the interrupt handler to empty it a bit
   while (i == tx_tail)
 	;
-	
+
   tx_buffer[tx_head] = c;
   tx_head = i;
-	
+
   if (empty) {
     // The buffer was empty before the new character was added, so enable interrupt on
     // USART Data Register empty. The interrupt handler will take it from there
@@ -148,15 +148,15 @@ void HardwareSerial::write(uint8_t c)
 {
   bool empty = (_tx_buffer->head == _tx_buffer->tail);
   int i = (_tx_buffer->head + 1) % SERIAL_BUFFER_SIZE;
-	
-  // If the output buffer is full, there's nothing for it other than to 
+
+  // If the output buffer is full, there's nothing for it other than to
   // wait for the interrupt handler to empty it a bit
   while (i == _tx_buffer->tail)
 	;
-	
+
   _tx_buffer->buffer[_tx_buffer->head] = c;
   _tx_buffer->head = i;
-	
+
   if (empty) {
     // The buffer was empty, so enable interrupt on
     // USART Data Register empty. The interrupt handler will take it from there
@@ -197,7 +197,7 @@ void printByte(unsigned char c)
 // {
 //  printByte('\n');
 // }
-// 
+//
 void printString(const char *s)
 {
 	while (*s)
@@ -213,14 +213,14 @@ void printPgmString(const char *s)
 }
 
 void printIntegerInBase(unsigned long n, unsigned long base)
-{ 
-	unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars. 
+{
+	unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars.
 	unsigned long i = 0;
 
 	if (n == 0) {
 		printByte('0');
 		return;
-	} 
+	}
 
 	while (n > 0) {
 		buf[i++] = n % base;
@@ -256,12 +256,12 @@ void printFloat(double n)
 // {
 //  printIntegerInBase(n, 16);
 // }
-// 
+//
 // void printOctal(unsigned long n)
 // {
 //  printIntegerInBase(n, 8);
 // }
-// 
+//
 // void printBinary(unsigned long n)
 // {
 //  printIntegerInBase(n, 2);
@@ -274,11 +274,11 @@ void print(const char *format, ...)
 {
 	char buf[256];
 	va_list ap;
-	
+
 	va_start(ap, format);
 	vsnprintf(buf, 256, format, ap);
 	va_end(ap);
-	
+
 	printString(buf);
 }
 */

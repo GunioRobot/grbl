@@ -28,7 +28,7 @@ void spindle_init()
   SPINDLE_ENABLE_DDR |= 1<<SPINDLE_ENABLE_BIT;
 }
 
-void spindle_run(int direction, uint32_t rpm) 
+void spindle_run(int direction, uint32_t rpm)
 {
   if(direction >= 0) {
     SPINDLE_DIRECTION_PORT &= ~(1<<SPINDLE_DIRECTION_BIT);

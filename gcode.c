@@ -58,7 +58,7 @@ struct ParserState gc;
 
 extern int32_t position[3];
 
-// This routine is required to get the correct state into the 
+// This routine is required to get the correct state into the
 // Parser if the position is manipulated using the buttons.
 void set_gcPosition()
 {
@@ -72,13 +72,13 @@ void set_gcPosition()
 #define FAIL(status) gc.status_code = status;
 
 int read_double(char *line,               //  <- string: line of RS274/NGC code being processed
-                     int *char_counter,   //  <- pointer to a counter for position on the line 
-                     double *double_ptr); //  <- pointer to double to be read                  
+                     int *char_counter,   //  <- pointer to a counter for position on the line
+                     double *double_ptr); //  <- pointer to double to be read
 
 int next_statement(char *letter, double *double_ptr, char *line, int *char_counter);
 
 
-void select_plane(uint8_t axis_0, uint8_t axis_1, uint8_t axis_2) 
+void select_plane(uint8_t axis_0, uint8_t axis_1, uint8_t axis_2)
 {
   gc.plane_axis_0 = axis_0;
   gc.plane_axis_1 = axis_1;
@@ -97,7 +97,7 @@ inline float to_millimeters(double value) {
   return(gc.inches_mode ? (value * MM_PER_INCH) : value);
 }
 
-// Find the angle in radians of deviance from the positive y axis. negative angles to the left of y-axis, 
+// Find the angle in radians of deviance from the positive y axis. negative angles to the left of y-axis,
 // positive to the right.
 double theta(double x, double y)
 {
@@ -105,7 +105,7 @@ double theta(double x, double y)
   if (y>0) {
     return(theta);
   } else {
-    if (theta>0) 
+    if (theta>0)
     {
       return(M_PI-theta);
     } else {
@@ -117,34 +117,34 @@ double theta(double x, double y)
 // Executes one line of 0-terminated G-Code. The line is assumed to contain only uppercase
 // characters and signed floats (no whitespace).
 uint8_t gc_execute_line(char *line) {
-  int char_counter = 0;  
+  int char_counter = 0;
   char letter;
   double value;
   int32_t line_number=0;
   double unit_converted_value;
   double inverse_feed_rate = -1;             // negative inverse_feed_rate means no inverse_feed_rate specified
   int radius_mode = FALSE;
-  
+
   uint8_t absolute_override = FALSE;         // 1 = absolute motion for this block only {G53}
-  uint8_t next_action = NEXT_ACTION_DEFAULT; // The action that will be taken by the parsed line 
-  
-  double target[3], offset[3];  
-  
+  uint8_t next_action = NEXT_ACTION_DEFAULT; // The action that will be taken by the parsed line
+
+  double target[3], offset[3];
+
   double p = 0, r = 0;                       // Stores the value of R and P statements until their meaning is determined
   int int_value;                             // A truncated integer version of parameter value of the current statement
-  
+
   clear_vector(target);
   clear_vector(offset);
 
   gc.status_code = GCSTATUS_OK;
-  
+
   // Disregard comments and block delete
   if (line[0] == '(') { return(gc.status_code); }
   if (line[0] == '/') { char_counter++; } // ignore block delete
-  
-  
+
+
   // If the line starts with an '$' it is a configuration-command
-  if (line[0] == '$') { 
+  if (line[0] == '$') {
     // Parameter lines are on the form '$4=374.3' or '$' to dump current settings
     char_counter = 1;
     if(line[char_counter] == 0) { dump_settings(); return(GCSTATUS_OK); }
@@ -154,18 +154,18 @@ uint8_t gc_execute_line(char *line) {
     if(line[char_counter] != 0) { return(GCSTATUS_UNSUPPORTED_STATEMENT); }
     store_setting(p, value);
   }
-  
+
 
   // Not a comment. Not a configuration-command. Then we'll handle this as g-code.
 
-  // If the machine step buffer is full, return with error. This is to prevent 
+  // If the machine step buffer is full, return with error. This is to prevent
   // blocking. The sequencer that feeds grbl should check before sending whether
   // it can send right now.
-  
+
   if (st_buffer_full()){
       FAIL(GCSTATUS_BUFFER_FULL);
       return(gc.status_code);
-  }	
+  }
 
   // Pass 1: Command statements
   while(next_statement(&letter, &value, line, &char_counter)) {
@@ -194,14 +194,14 @@ uint8_t gc_execute_line(char *line) {
         default: FAIL(GCSTATUS_UNSUPPORTED_STATEMENT);
       }
       break;
-      
+
       case 'N':
       	line_number = int_value % 100000; //Spec puts line number up to 99999
         break;
-      
+
       case 'M':
       switch(int_value) {
-        case 0: case 1: gc.program_flow = PROGRAM_FLOW_PAUSED; 
+        case 0: case 1: gc.program_flow = PROGRAM_FLOW_PAUSED;
 /*
         				gc.motion_mode = NEXT_ACTION_HALT;
 */
@@ -212,13 +212,13 @@ uint8_t gc_execute_line(char *line) {
         case 4: gc.spindle_direction = -1; break;
         case 5: gc.spindle_direction = 0; break;
         default: FAIL(GCSTATUS_UNSUPPORTED_STATEMENT);
-      }            
+      }
       break;
       case 'T': gc.tool = int_value; break;
     }
     if(gc.status_code) { break; }
   }
-  
+
   // If there were any errors parsing this line, we will return right away with the bad news
   if (gc.status_code) { return(gc.status_code); }
 
@@ -231,7 +231,7 @@ uint8_t gc_execute_line(char *line) {
     int_value = trunc(value);
     unit_converted_value = to_millimeters(value);
     switch(letter) {
-      case 'F': 
+      case 'F':
       if (gc.inverse_feed_rate_mode) {
         inverse_feed_rate = unit_converted_value; // seconds per motion for this motion only
       } else {
@@ -251,50 +251,50 @@ uint8_t gc_execute_line(char *line) {
       break;
     }
   }
-  
+
   // If there were any errors parsing this line, we will return right away with the bad news
   if (gc.status_code) { return(gc.status_code); }
-    
+
   // Update spindle state
   if (gc.spindle_direction) {
     spindle_run(gc.spindle_direction, gc.spindle_speed);
   } else {
     spindle_stop();
   }
-  
+
   // Perform any physical actions
   switch (next_action) {
     case NEXT_ACTION_GO_HOME: mc_go_home(line_number); break;
     case NEXT_ACTION_DWELL: mc_dwell(trunc(p*1000), line_number); break;
     case NEXT_ACTION_HALT: mc_halt(line_number); break;
-    case NEXT_ACTION_REPOSITION: mc_reposition(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], line_number); break;      
-    case NEXT_ACTION_DEFAULT: 
+    case NEXT_ACTION_REPOSITION: mc_reposition(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], line_number); break;
+    case NEXT_ACTION_DEFAULT:
     switch (gc.motion_mode) {
       case MOTION_MODE_CANCEL: break;
       case MOTION_MODE_SEEK:
       mc_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], gc.seek_rate, FALSE, line_number);
       break;
       case MOTION_MODE_LINEAR:
-      mc_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], 
+      mc_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS],
         (gc.inverse_feed_rate_mode) ? inverse_feed_rate : gc.feed_rate, gc.inverse_feed_rate_mode,
         line_number);
       break;
       case MOTION_MODE_CW_ARC: case MOTION_MODE_CCW_ARC:
       if (radius_mode) {
-        /* 
+        /*
           We need to calculate the center of the circle that has the designated radius and passes
           through both the current position and the target position. This method calculates the following
-          set of equations where [x,y] is the vector from current to target position, d == magnitude of 
+          set of equations where [x,y] is the vector from current to target position, d == magnitude of
           that vector, h == hypotenuse of the triangle formed by the radius of the circle, the distance to
-          the center of the travel vector. A vector perpendicular to the travel vector [-y,x] is scaled to the 
-          length of h [-y/d*h, x/d*h] and added to the center of the travel vector [x/2,y/2] to form the new point 
+          the center of the travel vector. A vector perpendicular to the travel vector [-y,x] is scaled to the
+          length of h [-y/d*h, x/d*h] and added to the center of the travel vector [x/2,y/2] to form the new point
           [i,j] at [x/2-y/d*h, y/2+x/d*h] which will be the center of our arc.
-          
+
           d^2 == x^2 + y^2
           h^2 == r^2 - (d/2)^2
           i == x/2 - y/d*h
           j == y/2 + x/d*h
-          
+
                                                                O <- [i,j]
                                                             -  |
                                                   r      -     |
@@ -303,38 +303,38 @@ uint8_t gc_execute_line(char *line) {
                                                 -              |
                                   [0,0] ->  C -----------------+--------------- T  <- [x,y]
                                             | <------ d/2 ---->|
-                    
+
           C - Current position
           T - Target position
           O - center of circle that pass through both C and T
           d - distance from C to T
           r - designated radius
           h - distance from center of CT to O
-          
+
           Expanding the equations:
 
           d -> sqrt(x^2 + y^2)
           h -> sqrt(4 * r^2 - x^2 - y^2)/2
-          i -> (x - (y * sqrt(4 * r^2 - x^2 - y^2)) / sqrt(x^2 + y^2)) / 2 
+          i -> (x - (y * sqrt(4 * r^2 - x^2 - y^2)) / sqrt(x^2 + y^2)) / 2
           j -> (y + (x * sqrt(4 * r^2 - x^2 - y^2)) / sqrt(x^2 + y^2)) / 2
-         
+
           Which can be written:
-          
+
           i -> (x - (y * sqrt(4 * r^2 - x^2 - y^2))/sqrt(x^2 + y^2))/2
           j -> (y + (x * sqrt(4 * r^2 - x^2 - y^2))/sqrt(x^2 + y^2))/2
-          
+
           Which we for size and speed reasons optimize to:
 
           h_x2_div_d = sqrt(4 * r^2 - x^2 - y^2)/sqrt(x^2 + y^2)
           i = (x - (y * h_x2_div_d))/2
           j = (y + (x * h_x2_div_d))/2
-          
+
         */
-        
+
         // Calculate the change in position along each selected axis
         double x = target[gc.plane_axis_0]-gc.position[gc.plane_axis_0];
         double y = target[gc.plane_axis_1]-gc.position[gc.plane_axis_1];
-        
+
         clear_vector(&offset);
         double h_x2_div_d = -sqrt(4 * r*r - x*x - y*y)/hypot(x,y); // == -(h * 2 / d)
         // If r is smaller than d, the arc is now traversing the complex plane beyond the reach of any
@@ -342,56 +342,56 @@ uint8_t gc_execute_line(char *line) {
         if(isnan(h_x2_div_d)) { FAIL(GCSTATUS_FLOATING_POINT_ERROR); return(gc.status_code); }
         // Invert the sign of h_x2_div_d if the circle is counter clockwise (see sketch below)
         if (gc.motion_mode == MOTION_MODE_CCW_ARC) { h_x2_div_d = -h_x2_div_d; }
-        
+
         /* The counter clockwise circle lies to the left of the target direction. When offset is positive,
            the left hand circle will be generated - when it is negative the right hand circle is generated.
-           
-           
+
+
                                                          T  <-- Target position
-                                                         
-                                                         ^ 
+
+                                                         ^
               Clockwise circles with this center         |          Clockwise circles with this center will have
               will have > 180 deg of angular travel      |          < 180 deg of angular travel, which is a good thing!
-                                               \         |          /   
+                                               \         |          /
   center of arc when h_x2_div_d is positive ->  x <----- | -----> x <- center of arc when h_x2_div_d is negative
                                                          |
                                                          |
-                                                         
-                                                         C  <-- Current position                                 */
-                
 
-        // Negative R is g-code-alese for "I want a circle with more than 180 degrees of travel" (go figure!), 
-        // even though it is advised against ever generating such circles in a single line of g-code. By 
+                                                         C  <-- Current position                                 */
+
+
+        // Negative R is g-code-alese for "I want a circle with more than 180 degrees of travel" (go figure!),
+        // even though it is advised against ever generating such circles in a single line of g-code. By
         // inverting the sign of h_x2_div_d the center of the circles is placed on the opposite side of the line of
         // travel and thus we get the unadvisably long arcs as prescribed.
-        if (r < 0) { h_x2_div_d = -h_x2_div_d; }        
+        if (r < 0) { h_x2_div_d = -h_x2_div_d; }
         // Complete the operation by calculating the actual center of the arc
         offset[gc.plane_axis_0] = (x-(y*h_x2_div_d))/2;
         offset[gc.plane_axis_1] = (y+(x*h_x2_div_d))/2;
-      } 
-      
+      }
+
       /*
-         This segment sets up an clockwise or counterclockwise arc from the current position to the target position around 
-         the center designated by the offset vector. All theta-values measured in radians of deviance from the positive 
-         y-axis. 
+         This segment sets up an clockwise or counterclockwise arc from the current position to the target position around
+         the center designated by the offset vector. All theta-values measured in radians of deviance from the positive
+         y-axis.
 
                             | <- theta == 0
-                          * * *                
-                        *       *                                               
-                      *           *                                             
-                      *     O ----T   <- theta_end (e.g. 90 degrees: theta_end == PI/2)                                          
-                      *   /                                                     
+                          * * *
+                        *       *
+                      *           *
+                      *     O ----T   <- theta_end (e.g. 90 degrees: theta_end == PI/2)
+                      *   /
                         C   <- theta_start (e.g. -145 degrees: theta_start == -PI*(3/4))
 
       */
-            
+
       // Find the radius
       double radius = hypot(offset[gc.plane_axis_0], offset[gc.plane_axis_1]);
       if (radius<0.0001) break;
       // calculate the theta (angle) of the current point
       double theta_start = theta(-offset[gc.plane_axis_0], -offset[gc.plane_axis_1]);
       // calculate the theta (angle) of the target point
-      double theta_end = theta(target[gc.plane_axis_0] - offset[gc.plane_axis_0] - gc.position[gc.plane_axis_0], 
+      double theta_end = theta(target[gc.plane_axis_0] - offset[gc.plane_axis_0] - gc.position[gc.plane_axis_0],
          target[gc.plane_axis_1] - offset[gc.plane_axis_1] - gc.position[gc.plane_axis_1]);
       // double theta_end = theta(5,0);
       // ensure that the difference is positive so that we have clockwise travel
@@ -406,34 +406,34 @@ uint8_t gc_execute_line(char *line) {
       // Calculate the motion along the depth axis of the helix
       double depth = target[gc.plane_axis_2]-gc.position[gc.plane_axis_2];
       // Trace the arc
-            
-/*            
-            printPgmString(PSTR("values in gc_execute line:\r\n"));  
+
+/*
+            printPgmString(PSTR("values in gc_execute line:\r\n"));
             printPgmString(PSTR("theta start: "));
             printFloat(theta_start);
             printPgmString(PSTR("\r\ntheta end: "));
             printFloat(theta_end);
-            printPgmString(PSTR("\r\noffset: ")); 
+            printPgmString(PSTR("\r\noffset: "));
             printFloat(offset[gc.plane_axis_0]);
-            printPgmString(PSTR(", ")); 
+            printPgmString(PSTR(", "));
             printFloat(offset[gc.plane_axis_1]);
-            printPgmString(PSTR("\r\n\r\n"));  
-*/            
-            
-      mc_arc(theta_start, angular_travel, radius, depth, 
-             gc.plane_axis_0, gc.plane_axis_1, gc.plane_axis_2, 
+            printPgmString(PSTR("\r\n\r\n"));
+*/
+
+      mc_arc(theta_start, angular_travel, radius, depth,
+             gc.plane_axis_0, gc.plane_axis_1, gc.plane_axis_2,
              target[X_AXIS], target[Y_AXIS], target[Z_AXIS],
-             (gc.inverse_feed_rate_mode) ? inverse_feed_rate : gc.feed_rate, 
+             (gc.inverse_feed_rate_mode) ? inverse_feed_rate : gc.feed_rate,
              gc.inverse_feed_rate_mode,
              line_number);
       // Finish off with a line to make sure we arrive exactly where we think we are
-/*      mc_line( 
-        (gc.inverse_feed_rate_mode) ? inverse_feed_rate : gc.feed_rate, 
+/*      mc_line(
+        (gc.inverse_feed_rate_mode) ? inverse_feed_rate : gc.feed_rate,
         gc.inverse_feed_rate_mode, line_number);
 */      break;
-    }    
+    }
   }
-  
+
   // As far as the parser is concerned, the position is now == target. In reality the
   // motion control system might still be processing the action and the real tool position
   // in any intermediate location.
@@ -448,7 +448,7 @@ int next_statement(char *letter, double *double_ptr, char *line, int *char_count
   if (line[*char_counter] == 0) {
     return(0); // No more statements
   }
-  
+
   *letter = line[*char_counter];
   if((*letter < 'A') || (*letter > 'Z')) {
     FAIL(GCSTATUS_EXPECTED_COMMAND_LETTER);
@@ -462,16 +462,16 @@ int next_statement(char *letter, double *double_ptr, char *line, int *char_count
 }
 
 int read_double(char *line,               //!< string: line of RS274/NGC code being processed
-                     int *char_counter,   //!< pointer to a counter for position on the line 
-                     double *double_ptr)  //!< pointer to double to be read                  
+                     int *char_counter,   //!< pointer to a counter for position on the line
+                     double *double_ptr)  //!< pointer to double to be read
 {
   char *start = line + *char_counter;
   char *end;
-  
+
   *double_ptr = strtod(start, &end);
-  if(end == start) { 
-    FAIL(GCSTATUS_BAD_NUMBER_FORMAT); 
-    return(0); 
+  if(end == start) {
+    FAIL(GCSTATUS_BAD_NUMBER_FORMAT);
+    return(0);
   };
 
   *char_counter = end - line;

@@ -44,11 +44,11 @@ void prompt() {
 extern int32_t actual_position[3];    // The current actual position of the tool in absolute steps
 extern int32_t position[3];    // The current target position of the tool in absolute steps
 
-void sp_init() 
+void sp_init()
 {
   printPgmString(PSTR("\r\nGrbl "));
   printPgmString(PSTR(VERSION));
-  printPgmString(PSTR("\r\n"));  
+  printPgmString(PSTR("\r\n"));
   prompt();
 }
 
@@ -57,7 +57,7 @@ void return_status(uint8_t status)
 	if (Verbose){
 		switch(status) {
 			case GCSTATUS_OK: printPgmString(PSTR("ok\r\n")); break;
-			case GCSTATUS_BAD_NUMBER_FORMAT: printPgmString(PSTR("error: bad number format\r\n")); break; 
+			case GCSTATUS_BAD_NUMBER_FORMAT: printPgmString(PSTR("error: bad number format\r\n")); break;
 			case GCSTATUS_EXPECTED_COMMAND_LETTER: printPgmString(PSTR("error: expected command letter\r\n")); break;
 			case GCSTATUS_UNSUPPORTED_STATEMENT: printPgmString(PSTR("error: unsupported option number\r\n")); break;
 			case GCSTATUS_MOTION_CONTROL_ERROR: printPgmString(PSTR("error: motion control error\r\n")); break;
@@ -80,14 +80,14 @@ void return_status(uint8_t status)
 void print_count_as_mm(float count, char axis, char Pad)
 {
 	// Convert position in steps to mm:
-	// pos = steps * 1.27/1600 
+	// pos = steps * 1.27/1600
 	//     = steps * .00079375
-	//     = steps * 79375 / 100 000 000    (1e-8) 
-	
+	//     = steps * 79375 / 100 000 000    (1e-8)
+
 	long whole;
 	long fraction;
 	float answer;
-	
+
         if (axis==X_AXIS){
             answer = count*DEFAULT_X_UM_PER_STEP;
         } else if (axis==Y_AXIS){
@@ -114,8 +114,8 @@ void print_count_as_mm(float count, char axis, char Pad)
 	    if (fraction<10) printPgmString(PSTR("0"));
 	    printInteger(fraction);
 	}
-} 
- 
+}
+
 void sp_report_position()
 {
 
@@ -138,7 +138,7 @@ void sp_report_position()
 	print_count_as_mm(actual_position[Z_AXIS], Z_AXIS, 1);
 	printPgmString(PSTR("\n\r\n\r"));
 
-} 
+}
 
 void sp_quick_position()
 {
@@ -165,7 +165,7 @@ void sp_quick_position()
 		printInteger(iterations/100);            // The number of iterations left to complete the current_block
     }
 	printPgmString(PSTR("\n\r"));
-} 
+}
 
 extern char buttons[4];
 
@@ -288,7 +288,7 @@ void process_command(char *line)
         }
         if (line[1]!='Q') prompt();
     }
-} 
+}
 
 void sp_process()
 {
@@ -296,22 +296,22 @@ void sp_process()
   uint8_t status;
 
 // Only gets processed if there is something waiting on the serial port:
-  while((c = serialRead()) != -1) 
+  while((c = serialRead()) != -1)
   {
   	// Echo sent characters if required:
-  	if (Verbose) serialWrite(c);		
-		
+  	if (Verbose) serialWrite(c);
+
 	if (c == '\r') {serialWrite('\n');}
-	
+
     if((char_counter > 0) && ((c == '\n') || (c == '\r'))) {  // Line is complete. Then execute!
       line[char_counter] = 0;
       printString(line); printPgmString(PSTR("\r\n"));
 	  if (line[0]=='E'){
    	    process_command(line);
 		char_counter=0;
-	  } else {   
+	  } else {
 			status = gc_execute_line(line);
-			char_counter = 0; 
+			char_counter = 0;
 			return_status(status);
 	  }
     } else if (c <= ' ') { // Throw away whitepace and control characters

@@ -24,7 +24,7 @@
 void sp_init();
 
 // Read command lines from the serial port and execute them as they
-// come in. Blocks until the serial buffer is emptied. 
+// come in. Blocks until the serial buffer is emptied.
 void sp_process();
 
 #endif

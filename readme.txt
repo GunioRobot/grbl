@@ -1,4 +1,4 @@
-Grbl - an open source, embedded high performance g-code-parser and CNC milling controller written in optimized C that 
+Grbl - an open source, embedded high performance g-code-parser and CNC milling controller written in optimized C that
 will run on a straight Arduino.
 
 Documentation: http://dank.bengler.no/-/page/show/5470_grbl
@@ -32,5 +32,5 @@ Prioritized to-do:
 The project was initially inspired by the Arduino GCode Interpreter by Mike Ellery
 
 To be done:
-- G4 dwell is currently blocking! 
+- G4 dwell is currently blocking!
 

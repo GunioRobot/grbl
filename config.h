@@ -1,5 +1,5 @@
 /*
-  config.h - eeprom and compile time configuration handling 
+  config.h - eeprom and compile time configuration handling
   Part of Grbl
 
   Copyright (c) 2009 Simen Svale Skogsrud
@@ -31,10 +31,10 @@
 
 #define STEPPERS_ENABLE_DDR     DDRB		// pin 13, with LED
 #define STEPPERS_ENABLE_PORT    PORTB
-#define STEPPERS_ENABLE_BIT     5	
+#define STEPPERS_ENABLE_BIT     5
 
 #define STEPPING_DDR            DDRD
-#define STEPPING_PORT           PORTD 
+#define STEPPING_PORT           PORTD
 #define X_STEP_BIT              7
 #define Y_STEP_BIT              5
 #define Z_STEP_BIT              3

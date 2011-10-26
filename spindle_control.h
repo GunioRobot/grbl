@@ -19,7 +19,7 @@
 */
 
 #ifndef spindle_control_h
-#define spindle_control_h 
+#define spindle_control_h
 
 #include <avr/io.h>
 

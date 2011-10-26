@@ -1,5 +1,5 @@
 /*
-  i2c.cpp - 
+  i2c.cpp -
   Part of Grbl: An embedded CNC Controller with rs274/ngc (g-code) support
 
   Copyright (c) 2010 Albert Daffe
@@ -39,13 +39,13 @@ void i2c_init()
 
 void i2c_write_value(byte addr, byte config, int32_t value)
 {
-  Wire.beginTransmission(addr); 	
+  Wire.beginTransmission(addr);
   Wire.send(config);
-  Wire.send((char)((value >> 24) & 0xFF));      
-  Wire.send((char)((value >> 16) & 0xFF));      
-  Wire.send((char)((value >> 8) & 0xFF));      
-  Wire.send((char)(value & 0xFF));      
-  Wire.endTransmission();    	
+  Wire.send((char)((value >> 24) & 0xFF));
+  Wire.send((char)((value >> 16) & 0xFF));
+  Wire.send((char)((value >> 8) & 0xFF));
+  Wire.send((char)(value & 0xFF));
+  Wire.endTransmission();
 }
 
 void i2c_report_position(void)
